@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:practice/library.dart';
 import 'package:practice/search/booklist.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -101,8 +102,8 @@ class _AddBookState extends State<AddBook> {
                   ),
                   onPressed: () {
                     Book book = Book(
-                      BookList['authors'].toString(),
                       BookList['title'].toString(),
+                      BookList['authors'].toString(),
                       startController!.text,
                       endController!.text,
                       simpleFeelController!.text,
@@ -113,7 +114,7 @@ class _AddBookState extends State<AddBook> {
                         .push()
                         .set(book.toMap()) // Assuming Book has a toMap method
                         .then((_) {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => Library(id: widget.id)));
                     });
                   },
                   child: Text('저장하기'),

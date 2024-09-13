@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:practice/my/addBook.dart';
+import 'package:practice/search/booklist.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../Data/book.dart';
@@ -22,7 +23,7 @@ class _DetailBookState extends State<DetailBook> {
   DatabaseReference? reference;
   String _databaseURL = 'https://practice-76503-default-rtdb.firebaseio.com/';
   List<Book> book = List.empty(growable: true);
-
+b
 
   @override
   void initState() {
@@ -31,9 +32,29 @@ class _DetailBookState extends State<DetailBook> {
     _database = FirebaseDatabase.instanceFor(
         app: Firebase.app(), databaseURL: _databaseURL);
     reference = _database!.ref().child('books');
-
+    Future<void> list = setupList();
 
   }
+
+  Future<void> setupList()async {
+    await reference!
+        .child(widget.BookList!['title'],)
+        .onChildAdded
+        .listen((event) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+// //
+//       if (data != null) {
+//         final List<Book> books = [];
+//         data.forEach((key, value) {
+//           final bookData = value as Map<dynamic, dynamic>;
+//           books.add(Book.fromJson(bookData.cast<String, dynamic>()));
+//         });
+//         setState(() {
+//           setupList();
+//         });
+//       }
+      });
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +79,12 @@ class _DetailBookState extends State<DetailBook> {
                     id: widget.id,
                     BookList: widget.BookList!,
                 )));
-              }, child: Text('내 책장에 넣기'))
+              }, child: Text('내 책장에 넣기')),
+              ListView.builder(itemBuilder: (context, index){
+                Text(list[index]["simpleFeel"]);}),
+
+              
+              
             ],
 
           ),

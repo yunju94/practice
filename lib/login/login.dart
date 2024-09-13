@@ -103,7 +103,7 @@ class _LoginState extends State<Login> {
                         var bytes = utf8.encode(_pwTextController!.value.text);
                         var digest = sha1.convert(bytes);
                         if (user.pw == digest.toString()) {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Library(_idTextController!.value.text)));
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Library(id: _idTextController!.value.text)));
                         } else {
                           makeDialog('비밀번호가 틀렸습니다. 다시 확인하십시오.');
                         }

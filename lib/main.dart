@@ -47,6 +47,14 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => Login(),
 
+          '/sign': (context) => SignPage(),
+
+          '/library': (context) => Library(),
+          '/search': (context) => SearchBook(),
+          '/list': (context) => BookList(),
+          '/detail': (context) => DetailBook(),
+
+          '/add': (context) => AddBook(),
 
 
         }
