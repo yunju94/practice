@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'booklist.dart';
 
 class SearchBook extends StatefulWidget {
+  final String? id;
+  SearchBook({this.id});
   @override
   State<SearchBook> createState() => _SearchBook();
 }
@@ -69,10 +71,11 @@ class _SearchBook extends State<SearchBook> {
       var dataConvertedToJSON = json.decode(response.body);
       List result = dataConvertedToJSON['documents'];
       data!.addAll(result);
-      titleList = data!.first['title'];
-      print(titleList);
-      Navigator.of(context)
-          .pushNamed('/list', arguments: data);
+      print(data);
 
+      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> BookList(
+        Books: data,
+        id: widget.id,
+      )));
   }
 }
