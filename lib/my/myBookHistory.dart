@@ -4,8 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:practice/Data/database.dart';
 import 'package:sqflite/sqflite.dart';
-
-
 import '../Data/review.dart';
 
 class MyBookHistory extends StatefulWidget {
@@ -42,8 +40,10 @@ class _MyBookHistoryState extends State<MyBookHistory> {
   }
 
   Future<void> _fetchBooks() async {
-    print("1111111111111");
-    reference!.child(widget.id!).onValue.listen((event) {
+    reference!.child(widget.id!)
+        .orderByChild('title')
+        .equalTo(widget.booktitle)
+        .once().then((DatabaseEvent event) {
       final data = event.snapshot.value as Map<dynamic, dynamic>?;
 
       if (data != null) {
@@ -60,32 +60,45 @@ class _MyBookHistoryState extends State<MyBookHistory> {
     });
   }
 
-  Future<void> deleteHistory(String feel) async {
+  Future<void> deleteHistory(String feel, int index) async {
     final Database? database = await db;
 
     if (database == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Database is not initialized')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Database is not initialized')),
+      );
       return;
     }
 
     try {
-      final int count = await database.delete(
+      // SQLite에서 데이터 삭제
+      await database.delete(
         'review',
         where: 'simpleFeel=?',
         whereArgs: [feel],
       );
 
-      if (count > 0) {
-        setState(() {
-          _fetchBooks(); // 삭제 후 리스트 갱신
-        });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('감상평을 삭제했습니다.')));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('해당 감상평을 찾을 수 없습니다.')));
+      // Firebase에서 데이터 삭제
+      if (feel.isNotEmpty) {
+        await reference!.child(feel).remove();
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('오류 발생: ${e.toString()}')));
+
+      setState(() {
+        historyList.removeAt(index);
+        Navigator.of(context).pop();
+      });
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $error')),
+      );
     }
+
+    reference!.child(feel).remove();
+    //doc(feel).delete().then(
+      //    (doc) => print("Document deleted"),
+      //onError: (e) => print("Error updating document $e"),
+    //);
+
   }
 
   @override
@@ -105,6 +118,7 @@ class _MyBookHistoryState extends State<MyBookHistory> {
             return ListView.builder(
               itemCount: historyList.length,
               itemBuilder: (context, index) {
+                final review = historyList[index];
                 return Card(
                   child: InkWell(
                     onTap: () {
@@ -115,12 +129,18 @@ class _MyBookHistoryState extends State<MyBookHistory> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("시작 날짜: ${historyList[index].startDate}"),
-                          Text("종료 날짜: ${historyList[index].endDate}"),
-                          Text("감상평: ${historyList[index].simpleFeel}"),
+                          Text("시작 날짜: ${review.startDate}"),
+                          Text("종료 날짜: ${review.endDate}"),
+                          Text("감상평: ${review.simpleFeel ?? 'No comment'}"),
                           ElevatedButton(
                             onPressed: () {
-                              deleteHistory(historyList[index].simpleFeel ?? '');
+                              //deleteHistory(review.simpleFeel ?? '', index);
+
+                              reference!
+                              .child(widget.id.toString())
+                                  .child('books')
+                                  .child(review.title!)
+                              .remove().then((_){print("object");});
                             },
                             child: Icon(Icons.delete, color: Colors.red),
                           ),

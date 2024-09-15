@@ -41,7 +41,7 @@ dependencies:
   firebase_database: ^11.0.0
   firebase_messaging: ^15.1.1
   firebase_core_platform_interface: ^5.2.1
-  firebase_auth: ^5.2.1
+  # firebase_auth: ^5.2.1
 
   google_sign_in: ^6.2.1
 
