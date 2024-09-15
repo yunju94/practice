@@ -1,14 +1,40 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:practice/search/detailBook.dart';
 import 'package:sqflite/sqflite.dart';
 
-class BookList extends StatelessWidget {
+import '../Data/book.dart';
+class BookList extends StatefulWidget {
   final List? Books;
   final String? id;
 
   BookList({ this.Books, this.id});
+
+
+
+  @override
+  State<BookList> createState() => _BookListState();
+}
+
+class _BookListState extends State<BookList> {
+  FirebaseDatabase? _database;
+  DatabaseReference? reference;
+  String _databaseURL = 'https://practice-76503-default-rtdb.firebaseio.com/';
+  List<Book> book = List.empty(growable: true);
+
+
+  @override
+  void initState() {
+    super.initState();
+    _database = FirebaseDatabase.instanceFor(
+        app: Firebase.app(), databaseURL: _databaseURL);
+    reference = _database!.ref().child('books');
+
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +53,7 @@ class BookList extends StatelessWidget {
                     children: [
                       Container(
                         child: Image.network(
-                          Books![index]['thumbnail'],
+                          widget.Books![index]['thumbnail'],
                           height: 200,
                           width: 100,
                           fit: BoxFit.contain,
@@ -36,8 +62,8 @@ class BookList extends StatelessWidget {
                       Container(
                         child: Column(
                           children: [
-                            Text(Books![index]['title'].toString()),
-                            Text(Books![index]['authors'].toString()),
+                            Text(widget.Books![index]['title'].toString()),
+                            Text(widget.Books![index]['authors'].toString()),
                           ],
 
                         ),
@@ -46,9 +72,10 @@ class BookList extends StatelessWidget {
                     ],
                   ),
                 onTap: (){
+
                   Navigator.of(context).push(MaterialPageRoute(builder: (context)=> DetailBook(
-                      id: id,
-                      BookList:  Books![index]
+                      id: widget.id,
+                      BookList:  widget.Books![index]
                   )));
 
 
@@ -58,7 +85,7 @@ class BookList extends StatelessWidget {
 
 
           );
-        }, itemCount: Books!.length,),
+        }, itemCount: widget.Books!.length,),
         ),
       ),
     );

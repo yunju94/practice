@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:practice/search/searchBook.dart';
 import 'package:practice/Data/book.dart';
 
+import 'my/myBookHistory.dart';
+
 class Library extends StatefulWidget {
   final String? id;
   Library({this.id});
@@ -47,6 +49,8 @@ class _LibraryState extends State<Library> {
       }
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -92,21 +96,26 @@ class _LibraryState extends State<Library> {
                             (colIndex) {
                           final index = (bookList.length - 1) - (rowIndex * 8 + colIndex);
                           if (index >= 0) {
+                            final book = bookList[index];
                             Color backgroundColor = Colors.primaries[
                             index % Colors.primaries.length];
                             return Padding(
                               padding: EdgeInsets.symmetric(horizontal: 1.5), // 네모 사이의 간격 3px
-                              child: Container(
-                                width: (MediaQuery.of(context).size.width - 4 * 7) / 8, // 가로 8개에 맞게 너비 조정
-                                height: 90,
-                                color: backgroundColor, // 배경 색상 설정
-                                child: Center(
-                                  child: Text(
-                                    bookList[index].title.toString(), // 책 제목
-                                    style: TextStyle(color: Colors.white),
-                                    textAlign: TextAlign.center, // 텍스트 중앙 정렬
+                              child: InkWell(
+                                child: Container(
+                                  width: (MediaQuery.of(context).size.width - 4 * 7) / 8, // 가로 8개에 맞게 너비 조정
+                                  height: 90,
+                                  color: backgroundColor, // 배경 색상 설정
+                                  child: Center(
+                                    child: Text(
+                                      book.title.toString(), // 책 제목
+                                      style: TextStyle(color: Colors.white),
+                                      textAlign: TextAlign.center, // 텍스트 중앙 정렬
+                                    ),
                                   ),
-                                ),
+                                ),onTap: (){
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyBookHistory(id: widget.id, booktitle : book.title.toString())));
+                              },
                               ),
                             );
                           } else {

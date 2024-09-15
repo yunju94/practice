@@ -9,7 +9,7 @@ import 'package:practice/search/booklist.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../Data/book.dart';
-import '../Data/user.dart';
+
 
 class AddBook extends StatefulWidget {
   final String? id;
@@ -102,14 +102,16 @@ class _AddBookState extends State<AddBook> {
                   ),
                   onPressed: () {
                     Book book = Book(
-                      BookList['title'].toString(),
+                      widget.id,
+                      BookList['title'],
                       BookList['authors'].toString(),
                       startController!.text,
                       endController!.text,
                       simpleFeelController!.text,
-                      widget.id, // Assuming this is the user ID
+                       // Assuming this is the user ID
                     );
                     reference!
+                        .child('review')
                         .child(widget.id!)
                         .push()
                         .set(book.toMap()) // Assuming Book has a toMap method

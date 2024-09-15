@@ -5,9 +5,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:practice/library.dart';
-import '../Data/user.dart';
-import '../kakao_login.dart';
+
+import '../Data/member.dart';
+
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -78,10 +81,12 @@ class _LoginState extends State<Login> {
                         labelText: '비밀번호', border: OutlineInputBorder()),
                   )),
               TextButton(
-                  onPressed: () {
-                    signInWithKakao();
-                  },
-                  child: Text('카카오 로그인')),
+                onPressed: () async {
+                  KakaoLogin();
+                },
+                child: Text('카카오톡으로 로그인'),
+              ),
+
               TextButton(
                   onPressed: () {
                     if (_idTextController!.value.text.length == 0 ||
@@ -99,11 +104,13 @@ class _LoginState extends State<Login> {
                         Map<String, dynamic> data = rawData.map((key, value) =>
                             MapEntry(key.toString(), value as dynamic));
 
-                        User user = User.fromJson(data);
+                        Member user = Member.fromJson(data);
                         var bytes = utf8.encode(_pwTextController!.value.text);
                         var digest = sha1.convert(bytes);
                         if (user.pw == digest.toString()) {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Library(id: _idTextController!.value.text)));
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  Library(id: _idTextController!.value.text)));
                         } else {
                           makeDialog('비밀번호가 틀렸습니다. 다시 확인하십시오.');
                         }
@@ -120,7 +127,6 @@ class _LoginState extends State<Login> {
       ),
 
     );
-
   }
 
   void makeDialog(String text) {
@@ -131,5 +137,36 @@ class _LoginState extends State<Login> {
             content: Text(text),
           );
         });
+  }
+
+  void KakaoLogin() async {
+    if (await isKakaoTalkInstalled()) {
+      try {
+        await UserApi.instance.loginWithKakaoTalk();
+        print('카카오톡으로 로그인 성공');
+      } catch (error) {
+        print('카카오톡으로 로그인 실패 $error');
+
+        // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
+        // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
+        if (error is PlatformException && error.code == 'CANCELED') {
+          return;
+        }
+        // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인
+        try {
+          await UserApi.instance.loginWithKakaoAccount();
+          print('카카오계정으로 로그인 성공');
+        } catch (error) {
+          print('카카오계정으로 로그인 실패 $error');
+        }
+      }
+    } else {
+      try {
+        await UserApi.instance.loginWithKakaoAccount();
+        print('카카오계정으로 로그인 성공');
+      } catch (error) {
+        print('카카오계정으로 로그인 실패 $error');
+      }
+    }
   }
 }

@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'package:practice/my/addBook.dart';
 import 'package:practice/login/signPage.dart';
+import 'package:practice/my/myBookHistory.dart';
 import 'package:practice/search/booklist.dart';
 import 'package:practice/firebase_options.dart';
 import 'package:practice/library.dart';
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Future<Database> database = initDatabase();
+
     return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -55,22 +56,12 @@ class MyApp extends StatelessWidget {
           '/detail': (context) => DetailBook(),
 
           '/add': (context) => AddBook(),
+          '/myhistory': (context) => MyBookHistory(),
 
 
         }
     );
   }
 
-  Future<Database> initDatabase() async {
-    return openDatabase(
-      join(await getDatabasesPath(), 'book_database.db'),
-      onCreate: (db, version) {
-        return db.execute(
-          "CREATE TABLE book(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-              "title TEXT, author Text, startDate Text, endDate Text)",
-        );
-      },
-      version: 1,
-    );
-  }
+
 }

@@ -23,7 +23,7 @@ class _DetailBookState extends State<DetailBook> {
   DatabaseReference? reference;
   String _databaseURL = 'https://practice-76503-default-rtdb.firebaseio.com/';
   List<Book> book = List.empty(growable: true);
-b
+
 
   @override
   void initState() {
@@ -80,12 +80,14 @@ b
                     BookList: widget.BookList!,
                 )));
               }, child: Text('내 책장에 넣기')),
-              ListView.builder(itemBuilder: (context, index){
-                Text(list[index]["simpleFeel"]);}),
+              ElevatedButton(onPressed: (){
+                print("object");
+              }, child: Text('감상평 몰아보기')),
 
               
               
             ],
+
 
           ),
 

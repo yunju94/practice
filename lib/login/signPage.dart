@@ -5,7 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:practice/Data/user.dart';
+
+import '../Data/member.dart';
 
 class SignPage extends StatefulWidget {
   @override
@@ -100,7 +101,7 @@ class _SignPageState extends State<SignPage> {
                   reference!
                       .child(_idTextController!.value.text)
                       .push()
-                      .set(User(_idTextController!.value.text, digest.toString(), DateTime.now().toIso8601String()).toJson())
+                      .set(Member(_idTextController!.value.text, digest.toString(), DateTime.now().toIso8601String()).toJson())
                       .then((_){
                         Navigator.of(context).pop();
                   });
