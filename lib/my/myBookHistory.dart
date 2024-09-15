@@ -28,7 +28,7 @@ class _MyBookHistoryState extends State<MyBookHistory> {
   @override
   void initState() {
     super.initState();
-    db = DB().initDatabase(); // Future<Database>를 초기화
+    db = DB().initDatabaseReview(); // Future<Database>를 초기화
     _initializeFirebase();
   }
 
@@ -42,26 +42,22 @@ class _MyBookHistoryState extends State<MyBookHistory> {
   }
 
   Future<void> _fetchBooks() async {
+    print("1111111111111");
+    reference!.child(widget.id!).onValue.listen((event) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>?;
 
-    final snapshot = await reference!
-        .child(widget.id!)
-        .orderByChild('title')
-        .equalTo(widget.booktitle!)
-        .get();
+      if (data != null) {
+        final List<Review> history = [];
+        data.forEach((key, value) {
+          final bookData = value as Map<dynamic, dynamic>;
+          history.add(Review.fromJson(bookData.cast<String, dynamic>()));
+        });
 
-    final data = snapshot.value as Map<dynamic, dynamic>?;
-
-    if (data != null) {
-      final List<Review> history = [];
-      data.forEach((key, value) {
-        final bookData = value as Map<dynamic, dynamic>;
-        history.add(Review.fromJson(bookData.cast<String, dynamic>()));
-      });
-
-      setState(() {
-        historyList = history;
-      });
-    }
+        setState(() {
+          historyList = history;
+        });
+      }
+    });
   }
 
   Future<void> deleteHistory(String feel) async {
