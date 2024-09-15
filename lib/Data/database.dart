@@ -7,7 +7,7 @@ class DB {
       join(await getDatabasesPath(), 'books_database.db'),
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE books(id TEXT, title TEXT, author TEXT)",
+          "CREATE TABLE books(id TEXT, title TEXT, author TEXT, thumbnail TEXT)",
         );
       },
       version: 1,
@@ -19,7 +19,7 @@ class DB {
       join(await getDatabasesPath(), 'review_database.db'),
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE books(id TEXT, title TEXT, startDate TEXT, endDate TEXT, simpleFeel TEXT)",
+          "CREATE TABLE review(id TEXT, title TEXT, startDate TEXT, endDate TEXT, simpleFeel TEXT)",
         );
       },
       version: 1,

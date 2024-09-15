@@ -4,8 +4,9 @@ import 'dart:core';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:practice/Data/database.dart';
+import 'package:practice/Data/review.dart';
 import 'package:practice/library.dart';
-import 'package:practice/search/booklist.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../Data/book.dart';
@@ -22,6 +23,7 @@ class AddBook extends StatefulWidget {
 }
 
 class _AddBookState extends State<AddBook> {
+  Future<Database>? database;
   FirebaseDatabase? _database;
   DatabaseReference? reference;
   String _databaseURL = 'https://practice-76503-default-rtdb.firebaseio.com/';
@@ -36,7 +38,9 @@ class _AddBookState extends State<AddBook> {
     super.initState();
     _database = FirebaseDatabase.instanceFor(
         app: Firebase.app(), databaseURL: _databaseURL);
-    reference = _database!.ref().child('books');
+    reference = _database!.ref().child('review');
+
+    database = DB().initDatabase();
 
     startController = TextEditingController();
     endController = TextEditingController();
@@ -101,23 +105,24 @@ class _AddBookState extends State<AddBook> {
                     foregroundColor: Colors.white,
                   ),
                   onPressed: () {
-                    Book book = Book(
+
+                    reference!
+                        .child(widget.id.toString())
+                        .push()
+                        .set(Review(
                       widget.id,
                       BookList['title'],
-                      BookList['authors'].toString(),
                       startController!.text,
                       endController!.text,
                       simpleFeelController!.text,
-                       // Assuming this is the user ID
-                    );
-                    reference!
-                        .child('review')
-                        .child(widget.id!)
-                        .push()
-                        .set(book.toMap()) // Assuming Book has a toMap method
-                        .then((_) {
+                      // Assuming this is the user ID
+                    ).toJson())
+                    .then((_){
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) => Library(id: widget.id)));
-                    });
+
+                    }); // Assuming Book has a toMap method
+
+
                   },
                   child: Text('저장하기'),
                 ),

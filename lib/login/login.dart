@@ -1,11 +1,13 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:practice/library.dart';
 
@@ -86,6 +88,9 @@ class _LoginState extends State<Login> {
                 },
                 child: Text('카카오톡으로 로그인'),
               ),
+              TextButton(onPressed: ()async{
+                signInWithGoogle();
+              }, child: Text('구글 로그인')),
 
               TextButton(
                   onPressed: () {
@@ -168,5 +173,29 @@ class _LoginState extends State<Login> {
         print('카카오계정으로 로그인 실패 $error');
       }
     }
+  }
+
+
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    Member user = Member(googleUser!.email, googleUser.email, TimeOfDay.now().toString());
+    reference!.
+    child('User')
+    .push()
+    .set(user.toJson());
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 }

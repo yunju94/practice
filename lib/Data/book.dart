@@ -1,39 +1,37 @@
 class Book{
+  String? id;
   String? title;
   String? author;
-  String? startDate;
-  String? endDate;
-  String? simpleFeel;
-  String? id;
+  String? thumbnail;
 
-  Book(this.title, this.author, this.startDate, this.endDate, this.simpleFeel, this.id);
+
+
+  Book( this.id, this.title, this.author, this.thumbnail);
 
   Map<String, dynamic> toMap(){
     return{
+      'id': id,
       'title': title,
       'author' : author,
-      'startDate' : startDate,
-      'endDate' : endDate,
-      'simpleFeel': simpleFeel,
-      'id': id,
+      'thumbnail' : thumbnail,
+
     };
   }
   Book.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         title = json['title'],
         author = json['author'],
-        startDate = json['endDate'],
-        endDate = json['endDate'],
-        simpleFeel = json['simpleFeel'];
+       thumbnail = json['thumbnail'];
+
 
   toJson() {
     return {
+      'id' : id,
       'title': title,
       'author' : author,
-      'startDate' : startDate,
-      'endDate' : endDate,
-      'simpleFeel': simpleFeel,
-      'id' : id,
+      'thumbnail' : thumbnail,
+
+
     };
   }
 

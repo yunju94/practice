@@ -3,9 +3,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:practice/search/detailBook.dart';
-import 'package:sqflite/sqflite.dart';
+
 
 import '../Data/book.dart';
+
 class BookList extends StatefulWidget {
   final List? Books;
   final String? id;
@@ -19,6 +20,7 @@ class BookList extends StatefulWidget {
 }
 
 class _BookListState extends State<BookList> {
+
   FirebaseDatabase? _database;
   DatabaseReference? reference;
   String _databaseURL = 'https://practice-76503-default-rtdb.firebaseio.com/';
@@ -28,6 +30,7 @@ class _BookListState extends State<BookList> {
   @override
   void initState() {
     super.initState();
+
     _database = FirebaseDatabase.instanceFor(
         app: Firebase.app(), databaseURL: _databaseURL);
     reference = _database!.ref().child('books');

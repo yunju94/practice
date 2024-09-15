@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:practice/Data/database.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../Data/book.dart';
+
+import '../Data/review.dart';
 
 class MyBookHistory extends StatefulWidget {
   final String? id;
@@ -22,7 +23,7 @@ class _MyBookHistoryState extends State<MyBookHistory> {
   FirebaseDatabase? _database;
   DatabaseReference? reference;
   String _databaseURL = 'https://practice-76503-default-rtdb.firebaseio.com/';
-  List<Book> historyList = [];
+  List<Review> historyList = [];
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class _MyBookHistoryState extends State<MyBookHistory> {
 
     _database = FirebaseDatabase.instanceFor(
         app: Firebase.app(), databaseURL: _databaseURL);
-    reference = _database!.ref().child('books');
+    reference = _database!.ref().child('review');
     _fetchBooks(); // 책 목록을 가져오는 작업 수행
   }
 
@@ -51,10 +52,10 @@ class _MyBookHistoryState extends State<MyBookHistory> {
     final data = snapshot.value as Map<dynamic, dynamic>?;
 
     if (data != null) {
-      final List<Book> history = [];
+      final List<Review> history = [];
       data.forEach((key, value) {
         final bookData = value as Map<dynamic, dynamic>;
-        history.add(Book.fromJson(bookData.cast<String, dynamic>()));
+        history.add(Review.fromJson(bookData.cast<String, dynamic>()));
       });
 
       setState(() {
@@ -73,7 +74,7 @@ class _MyBookHistoryState extends State<MyBookHistory> {
 
     try {
       final int count = await database.delete(
-        'books',
+        'review',
         where: 'simpleFeel=?',
         whereArgs: [feel],
       );

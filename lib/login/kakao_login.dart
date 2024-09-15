@@ -9,6 +9,9 @@ void _getUserInfo() async {
     User user = await UserApi.instance.me();
     _logger.info(
         '사용자 정보 요청 성공: 회원번호: ${user.id}, 닉네임: ${user.kakaoAccount?.profile?.nickname}');
+    print(user.id);
+    print(user.hasSignedUp);
+    print(user.kakaoAccount?.email);;
   } catch (error) {
     _logger.severe('사용자 정보 요청 실패: $error');
   }

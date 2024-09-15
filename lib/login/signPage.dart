@@ -101,7 +101,10 @@ class _SignPageState extends State<SignPage> {
                   reference!
                       .child(_idTextController!.value.text)
                       .push()
-                      .set(Member(_idTextController!.value.text, digest.toString(), DateTime.now().toIso8601String()).toJson())
+                      .set(Member(
+                      _idTextController!.value.text,
+                      digest.toString(),
+                      DateTime.now().toIso8601String()).toJson())
                       .then((_){
                         Navigator.of(context).pop();
                   });
