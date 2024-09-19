@@ -22,6 +22,7 @@ class _MyBookHistoryState extends State<MyBookHistory> {
   DatabaseReference? reference;
   String _databaseURL = 'https://practice-76503-default-rtdb.firebaseio.com/';
   List<Review> historyList = [];
+  List<String> code = [];
 
   @override
   void initState() {
@@ -36,14 +37,33 @@ class _MyBookHistoryState extends State<MyBookHistory> {
     _database = FirebaseDatabase.instanceFor(
         app: Firebase.app(), databaseURL: _databaseURL);
     reference = _database!.ref().child('review');
-    _fetchBooks(); // 책 목록을 가져오는 작업 수행
+
+    // Firebase 초기화가 완료된 후에 fetchBooks와 initListadd 호출
+    await _fetchBooks();
+    await initListadd();
+  }
+
+  Future<void> initListadd() async {
+    var snapshot = await reference!.child(widget.id!).orderByChild('title')
+        .equalTo(widget.booktitle).once();
+
+    if (snapshot.snapshot.exists) {
+      final data = snapshot.snapshot.value as Map<dynamic, dynamic>;
+      setState(() {
+        code = data.keys.map((key) => key.toString()).toList();
+      });
+    } else {
+      print('No matching data found');
+    }
   }
 
   Future<void> _fetchBooks() async {
-    reference!.child(widget.id!)
+    reference!
+        .child(widget.id!)
         .orderByChild('title')
         .equalTo(widget.booktitle)
-        .once().then((DatabaseEvent event) {
+        .once()
+        .then((DatabaseEvent event) {
       final data = event.snapshot.value as Map<dynamic, dynamic>?;
 
       if (data != null) {
@@ -58,47 +78,6 @@ class _MyBookHistoryState extends State<MyBookHistory> {
         });
       }
     });
-  }
-
-  Future<void> deleteHistory(String feel, int index) async {
-    final Database? database = await db;
-
-    if (database == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Database is not initialized')),
-      );
-      return;
-    }
-
-    try {
-      // SQLite에서 데이터 삭제
-      await database.delete(
-        'review',
-        where: 'simpleFeel=?',
-        whereArgs: [feel],
-      );
-
-      // Firebase에서 데이터 삭제
-      if (feel.isNotEmpty) {
-        await reference!.child(feel).remove();
-      }
-
-      setState(() {
-        historyList.removeAt(index);
-        Navigator.of(context).pop();
-      });
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $error')),
-      );
-    }
-
-    reference!.child(feel).remove();
-    //doc(feel).delete().then(
-      //    (doc) => print("Document deleted"),
-      //onError: (e) => print("Error updating document $e"),
-    //);
-
   }
 
   @override
@@ -134,13 +113,23 @@ class _MyBookHistoryState extends State<MyBookHistory> {
                           Text("감상평: ${review.simpleFeel ?? 'No comment'}"),
                           ElevatedButton(
                             onPressed: () {
-                              //deleteHistory(review.simpleFeel ?? '', index);
-
-                              reference!
-                              .child(widget.id.toString())
-                                  .child('books')
-                                  .child(review.title!)
-                              .remove().then((_){print("object");});
+                              if (code.length > index) { // index 유효성 검사 추가
+                                reference!
+                                    .child(widget.id.toString())
+                                    .child(code[index])
+                                    .remove()
+                                    .then((_) {
+                                  print("삭제 성공");
+                                  setState(() {
+                                    historyList.removeAt(index); // UI 업데이트
+                                    code.removeAt(index); // code 리스트에서 항목 제거
+                                  });
+                                }).catchError((error) {
+                                  print("삭제 실패: $error");
+                                });
+                              } else {
+                                print("삭제할 항목의 인덱스가 유효하지 않습니다.");
+                              }
                             },
                             child: Icon(Icons.delete, color: Colors.red),
                           ),
