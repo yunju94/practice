@@ -51,38 +51,41 @@ class _BookListState extends State<BookList> {
         child: Center(child: ListView.builder(itemBuilder: (context, index) {
           return Card(
               child: InkWell(
-                child:
-                  Row(
-                    children: [
-                      Container(
-                        child: Image.network(
-                          widget.Books![index]['thumbnail'],
-                          height: 200,
-                          width: 100,
-                          fit: BoxFit.contain,
-                        ),padding: const EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    Container(
+                      child: Image.network(
+                        widget.Books![index]['thumbnail'],
+                        height: 200,
+                        width: 100,
+                        fit: BoxFit.contain,
                       ),
-                      Container(
-                        child: Column(
-                          children: [
-                            Text(widget.Books![index]['title'].toString()),
-                            Text(widget.Books![index]['authors'].toString()),
-                          ],
-
-                        ),
-                      )
-
-                    ],
-                  ),
-                onTap: (){
-
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=> DetailBook(
-                      id: widget.id,
-                      BookList:  widget.Books![index]
-                  )));
-
-
-
+                      padding: const EdgeInsets.all(10),
+                    ),
+                    Expanded( // 여기에 Expanded 추가
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.Books![index]['title'].toString(),
+                            maxLines: 5,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(widget.Books![index]['authors'].toString()),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => DetailBook(
+                        id: widget.id,
+                        BookList: widget.Books![index],
+                      ),
+                    ),
+                  );
                 },
               ),
 

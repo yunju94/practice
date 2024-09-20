@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:practice/Data/database.dart';
+import 'package:practice/library.dart';
 import 'package:sqflite/sqflite.dart';
 import '../Data/review.dart';
 
@@ -23,6 +24,7 @@ class _MyBookHistoryState extends State<MyBookHistory> {
   String _databaseURL = 'https://practice-76503-default-rtdb.firebaseio.com/';
   List<Review> historyList = [];
   List<String> code = [];
+  List<String> bookcode = [];
 
   @override
   void initState() {
@@ -44,8 +46,11 @@ class _MyBookHistoryState extends State<MyBookHistory> {
   }
 
   Future<void> initListadd() async {
-    var snapshot = await reference!.child(widget.id!).orderByChild('title')
-        .equalTo(widget.booktitle).once();
+    var snapshot = await reference!
+        .child(widget.id!)
+        .orderByChild('title')
+        .equalTo(widget.booktitle)
+        .once();
 
     if (snapshot.snapshot.exists) {
       final data = snapshot.snapshot.value as Map<dynamic, dynamic>;
@@ -113,29 +118,17 @@ class _MyBookHistoryState extends State<MyBookHistory> {
                           Text("감상평: ${review.simpleFeel ?? 'No comment'}"),
                           ElevatedButton(
                             onPressed: () {
-                              if (code.length > index) { // index 유효성 검사 추가
-                                reference!
-                                    .child(widget.id.toString())
-                                    .child(code[index])
-                                    .remove()
-                                    .then((_) {
-                                  print("삭제 성공");
-                                  setState(() {
-                                    historyList.removeAt(index); // UI 업데이트
-                                    code.removeAt(index); // code 리스트에서 항목 제거
-                                  });
-                                }).catchError((error) {
-                                  print("삭제 실패: $error");
-                                });
-                              } else {
-                                print("삭제할 항목의 인덱스가 유효하지 않습니다.");
-                              }
+                              deleteReview(index);
                             },
                             child: Icon(Icons.delete, color: Colors.red),
                           ),
                         ],
                       ),
                     ),
+                    onLongPress: () {
+                      updateReview(review, index);
+                    },
+
                   ),
                 );
               },
@@ -146,5 +139,125 @@ class _MyBookHistoryState extends State<MyBookHistory> {
         },
       ),
     );
+  }
+ void updateReview(review, index){
+   TextEditingController startDateController =
+   TextEditingController(text: review.startDate);
+   TextEditingController endDateController =
+   TextEditingController(text: review.endDate);
+   TextEditingController simpleFeelController =
+   TextEditingController(text: review.simpleFeel);
+
+   // AlertDialog를 화면에 표시하기 위해 showDialog를 사용합니다.
+   showDialog(
+     context: context,
+     builder: (BuildContext context) {
+       return AlertDialog(
+         contentPadding: EdgeInsets.all(10),
+         content: SingleChildScrollView(
+           child: Column(
+             mainAxisSize: MainAxisSize.min,
+             children: [
+               TextField(controller: startDateController),
+               SizedBox(height: 10),
+               TextField(controller: endDateController),
+               SizedBox(height: 10),
+               TextField(controller: simpleFeelController),
+             ],
+           ),
+         ),
+         actions: [
+           TextButton(
+             onPressed: () {
+               Review updatedReview = Review(
+                 widget.id,
+                 widget.booktitle,
+                 startDateController.value.text,
+                 endDateController.value.text,
+                 simpleFeelController.value.text,
+               );
+
+               reference!
+                   .child(widget.id!)
+                   .child(code[index])
+                   .update(updatedReview.toJson())
+                   .then((_) {
+                 Navigator.of(context).pop(); // 다이얼로그 닫기
+                 setState(() {
+                   _fetchBooks();
+                   initListadd();
+                 }); // UI 업데이트를 위해 setState 호출
+               });
+             },
+             child: Text('수정하기'),
+           ),
+           TextButton(
+             onPressed: () {
+               Navigator.of(context).pop(); // 다이얼로그 닫기
+             },
+             child: Text('취소'),
+           ),
+         ],
+       );
+     },
+   );
+ }
+  void deleteReview(int index) async {
+    if (code.length > index) {
+      // 인덱스 유효성 검사
+      try {
+        await reference!
+            .child(widget.id.toString())
+            .child(code[index])
+            .remove();
+        print("삭제 성공");
+
+        setState(() {
+          historyList.removeAt(index); // UI 업데이트
+          code.removeAt(index); // code 리스트에서 항목 제거
+        });
+
+        // 모든 리뷰가 삭제된 경우 책 삭제
+        if (code.isEmpty) {
+          await deleteBookinit();
+
+          // 삭제할 책 코드가 필요하므로 확인 후 삭제
+          if (bookcode.isNotEmpty) {
+            await _database!
+                .ref()
+                .child('books')
+                .child(widget.id.toString())
+                .child(bookcode[0]) // 필요한 책 코드를 사용하세요
+                .remove();
+            print('책 삭제 성공');
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => Library(id: widget.id)));
+          }
+        }
+      } catch (error) {
+        print("삭제 실패: $error");
+      }
+    } else {
+      print("삭제할 항목의 인덱스가 유효하지 않습니다.");
+    }
+  }
+
+  Future<void> deleteBookinit() async {
+    var snapshot = await _database!
+        .ref()
+        .child('books')
+        .child(widget.id!)
+        .orderByChild('title')
+        .equalTo(widget.booktitle)
+        .once();
+
+    if (snapshot.snapshot.exists) {
+      final data = snapshot.snapshot.value as Map<dynamic, dynamic>;
+      setState(() {
+        bookcode = data.keys.map((key) => key.toString()).toList();
+      });
+    } else {
+      print('No matching data found');
+    }
   }
 }

@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:practice/my/addBook.dart';
+import 'package:practice/search/reviewAll.dart';
 
 import 'package:sqflite/sqflite.dart';
 
@@ -45,17 +46,17 @@ class _DetailBookState extends State<DetailBook> {
         .onChildAdded
         .listen((event) {
       final data = event.snapshot.value as Map<dynamic, dynamic>?;
-// //
-//       if (data != null) {
-//         final List<Book> books = [];
-//         data.forEach((key, value) {
-//           final bookData = value as Map<dynamic, dynamic>;
-//           books.add(Book.fromJson(bookData.cast<String, dynamic>()));
-//         });
-//         setState(() {
-//           setupList();
-//         });
-//       }
+
+      if (data != null) {
+        final List<Book> books = [];
+        data.forEach((key, value) {
+          final bookData = value as Map<dynamic, dynamic>;
+          books.add(Book.fromJson(bookData.cast<String, dynamic>()));
+        });
+        setState(() {
+          setupList();
+        });
+      }
     });
   }
 
@@ -98,7 +99,10 @@ class _DetailBookState extends State<DetailBook> {
                   child: Text('내 책장에 넣기')),
               ElevatedButton(
                   onPressed: () {
-                    print("object");
+                    Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => ReviewAll(
+                              Booktitle: widget.BookList!['title'],)));
                   },
                   child: Text('감상평 몰아보기')),
             ],

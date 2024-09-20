@@ -21,17 +21,18 @@ class Review{
   Review.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         title = json['title'],
-        startDate = json['endDate'],
+        startDate = json['startDate'],
         endDate = json['endDate'],
         simpleFeel = json['simpleFeel'];
 
   toJson() {
     return {
+      'id' : id,
       'title': title,
       'startDate' : startDate,
       'endDate' : endDate,
       'simpleFeel': simpleFeel,
-      'id' : id,
+
     };
   }
 
