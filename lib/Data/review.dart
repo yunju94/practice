@@ -4,8 +4,9 @@ class Review{
   String? startDate;
   String? endDate;
   String? simpleFeel;
+  int? count;
 
-  Review(this.id, this.title,  this.startDate, this.endDate, this.simpleFeel);
+  Review(this.id, this.title,  this.startDate, this.endDate, this.simpleFeel, this.count);
 
   Map<String, dynamic> toMap(){
     return{
@@ -15,7 +16,7 @@ class Review{
       'startDate' : startDate,
       'endDate' : endDate,
       'simpleFeel': simpleFeel,
-
+      'count' : count,
     };
   }
   Review.fromJson(Map<String, dynamic> json)
@@ -23,7 +24,8 @@ class Review{
         title = json['title'],
         startDate = json['startDate'],
         endDate = json['endDate'],
-        simpleFeel = json['simpleFeel'];
+        simpleFeel = json['simpleFeel'],
+        count = json['count'] ?? 0 ;
 
   toJson() {
     return {
@@ -32,6 +34,7 @@ class Review{
       'startDate' : startDate,
       'endDate' : endDate,
       'simpleFeel': simpleFeel,
+      'count' : count,
 
     };
   }

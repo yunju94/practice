@@ -24,6 +24,7 @@ class Book{
        thumbnail = json['thumbnail'];
 
 
+
   toJson() {
     return {
       'id' : id,

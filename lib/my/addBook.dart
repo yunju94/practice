@@ -32,6 +32,7 @@ class _AddBookState extends State<AddBook> {
   TextEditingController? startController;
   TextEditingController? endController;
   TextEditingController? simpleFeelController;
+  int count = 0;
 
   @override
   void initState() {
@@ -115,6 +116,7 @@ class _AddBookState extends State<AddBook> {
                       startController!.text,
                       endController!.text,
                       simpleFeelController!.text,
+                        count,
                       // Assuming this is the user ID
                     ).toJson())
                     .then((_){

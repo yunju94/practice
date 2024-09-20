@@ -116,6 +116,7 @@ class _MyBookHistoryState extends State<MyBookHistory> {
                           Text("시작 날짜: ${review.startDate}"),
                           Text("종료 날짜: ${review.endDate}"),
                           Text("감상평: ${review.simpleFeel ?? 'No comment'}"),
+                          Text("좋아요: ${review.count}"),
                           ElevatedButton(
                             onPressed: () {
                               deleteReview(index);
@@ -175,6 +176,7 @@ class _MyBookHistoryState extends State<MyBookHistory> {
                  startDateController.value.text,
                  endDateController.value.text,
                  simpleFeelController.value.text,
+                   historyList[index].count,
                );
 
                reference!
