@@ -8,6 +8,7 @@ import 'my/myBookHistory.dart';
 
 class Library extends StatefulWidget {
   final String? id;
+
   Library({this.id});
 
   @override
@@ -50,7 +51,49 @@ class _LibraryState extends State<Library> {
     });
   }
 
+  void deleteBook(int index) {
+    if (index < 0 || index >= bookList.length) return; // 범위 체크
 
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.all(10),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                Text("정말로 삭제하시겠습니까?"),
+                TextButton(
+                  onPressed: () async {
+                    try {
+                      await reference!
+                          .child(widget.id!)
+                          .child(bookList[index].title.toString())
+                          .remove();
+
+                      setState(() {
+                        bookList.removeAt(index); // 로컬 리스트에서 제거
+                      });
+                      Navigator.of(context).pop();
+                    } catch (e) {
+                      // 오류 처리 (예: Snackbar로 오류 메시지 표시)
+                    }
+                  },
+                  child: Text("예"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("아니요"),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,17 +136,21 @@ class _LibraryState extends State<Library> {
                     child: Row(
                       children: List.generate(
                         8, // 한 행에 8개 아이템
-                            (colIndex) {
-                          final index = (bookList.length - 1) - (rowIndex * 8 + colIndex);
+                        (colIndex) {
+                          final index =
+                              (bookList.length - 1) - (rowIndex * 8 + colIndex);
                           if (index >= 0) {
                             final book = bookList[index];
-                            Color backgroundColor = Colors.primaries[
-                            index % Colors.primaries.length];
+                            Color backgroundColor = Colors
+                                .primaries[index % Colors.primaries.length];
                             return Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 1.5), // 네모 사이의 간격 3px
+                              padding: EdgeInsets.symmetric(horizontal: 1.5),
+                              // 네모 사이의 간격 3px
                               child: InkWell(
                                 child: Container(
-                                  width: (MediaQuery.of(context).size.width - 4 * 7) / 8, // 가로 8개에 맞게 너비 조정
+                                  width: (MediaQuery.of(context).size.width -
+                                          4 * 7) /
+                                      8, // 가로 8개에 맞게 너비 조정
                                   height: 90,
                                   color: backgroundColor, // 배경 색상 설정
                                   child: Center(
@@ -113,13 +160,23 @@ class _LibraryState extends State<Library> {
                                       textAlign: TextAlign.center, // 텍스트 중앙 정렬
                                     ),
                                   ),
-                                ),onTap: (){
-                                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => MyBookHistory(id: widget.id, booktitle : book.title.toString())));
-                              },
+                                ),
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => MyBookHistory(
+                                          id: widget.id,
+                                          booktitle: book.title.toString())));
+                                },
+                                onLongPress: () {
+                                  deleteBook(index);
+                                },
                               ),
                             );
                           } else {
-                            return SizedBox(width: (MediaQuery.of(context).size.width - 3 * 7) / 8); // 빈 공간
+                            return SizedBox(
+                                width: (MediaQuery.of(context).size.width -
+                                        3 * 7) /
+                                    8); // 빈 공간
                           }
                         },
                       ),
