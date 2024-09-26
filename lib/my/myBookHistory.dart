@@ -177,6 +177,9 @@ class _MyBookHistoryState extends State<MyBookHistory> {
                  endDateController.value.text,
                  simpleFeelController.value.text,
                    historyList[index].count,
+                   historyList[index].uuid,
+
+
                );
 
                reference!

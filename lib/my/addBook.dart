@@ -8,6 +8,8 @@ import 'package:practice/Data/database.dart';
 import 'package:practice/Data/review.dart';
 import 'package:practice/library.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
+
 
 import '../Data/book.dart';
 
@@ -33,12 +35,16 @@ class _AddBookState extends State<AddBook> {
   TextEditingController? endController;
   TextEditingController? simpleFeelController;
   int count = 0;
+  late String uuidId;
 
   @override
   void initState() {
     super.initState();
     _database = FirebaseDatabase.instanceFor(
         app: Firebase.app(), databaseURL: _databaseURL);
+
+    var uuid = Uuid();
+    uuidId = uuid.v4();
     reference = _database!.ref().child('review');
 
     database = DB().initDatabase();
@@ -46,6 +52,9 @@ class _AddBookState extends State<AddBook> {
     startController = TextEditingController();
     endController = TextEditingController();
     simpleFeelController = TextEditingController();
+
+
+
   }
 
   @override
@@ -109,7 +118,7 @@ class _AddBookState extends State<AddBook> {
 
                     reference!
                         .child(widget.id.toString())
-                        .push()
+                        .child(uuidId)
                         .set(Review(
                       widget.id,
                       BookList['title'],
@@ -117,6 +126,7 @@ class _AddBookState extends State<AddBook> {
                       endController!.text,
                       simpleFeelController!.text,
                         count,
+                       uuidId,
                       // Assuming this is the user ID
                     ).toJson())
                     .then((_){

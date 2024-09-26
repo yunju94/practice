@@ -68,7 +68,7 @@ class _LibraryState extends State<Library> {
                     try {
                       await reference!
                           .child(widget.id!)
-                          .child(bookList[index].title.toString())
+                          .child(bookList[index].uuid!)
                           .remove();
 
                       setState(() {
@@ -118,7 +118,7 @@ class _LibraryState extends State<Library> {
               ),
             ),
           ),
-          // 가로로 8개만 표시하고 위아래로 스크롤 가능하도록 설정
+          // GridView 사용
           Positioned(
             bottom: 83, // 화면 하단으로부터 83px 떨어진 위치
             left: 0, // 화면 왼쪽으로부터 0px 위치
@@ -127,59 +127,44 @@ class _LibraryState extends State<Library> {
               width: MediaQuery.of(context).size.width, // 화면 너비에 맞게 조정
               height: 575,
               color: Colors.white.withOpacity(0.7), // 투명도 0.7 적용
-              child: ListView.builder(
-                reverse: true, // 아래에서 위로 스크롤 되도록 설정
-                itemCount: (bookList.length / 8).ceil(), // 총 행 수 계산
-                itemBuilder: (context, rowIndex) {
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 8, // 한 행에 8개 아이템
+                  childAspectRatio: (1 / 1.8), // 아이템 비율 조정
+                  crossAxisSpacing: 3, // 아이템 사이의 간격
+                  mainAxisSpacing: 11, // 행 사이의 간격
+                ),
+                itemCount: bookList.length,
+                reverse: true, // 아래에서 위로 쌓이도록 설정
+                itemBuilder: (context, index) {
+                  if (index >= bookList.length) return SizedBox(); // 빈 공간 처리
+
+                  final book = bookList[index];
+                  Color backgroundColor = Colors
+                      .primaries[index % Colors.primaries.length];
+
                   return Padding(
-                    padding: EdgeInsets.only(bottom: 11), // 행 사이의 간격
-                    child: Row(
-                      children: List.generate(
-                        8, // 한 행에 8개 아이템
-                        (colIndex) {
-                          final index =
-                              (bookList.length - 1) - (rowIndex * 8 + colIndex);
-                          if (index >= 0) {
-                            final book = bookList[index];
-                            Color backgroundColor = Colors
-                                .primaries[index % Colors.primaries.length];
-                            return Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 1.5),
-                              // 네모 사이의 간격 3px
-                              child: InkWell(
-                                child: Container(
-                                  width: (MediaQuery.of(context).size.width -
-                                          4 * 7) /
-                                      8, // 가로 8개에 맞게 너비 조정
-                                  height: 90,
-                                  color: backgroundColor, // 배경 색상 설정
-                                  child: Center(
-                                    child: Text(
-                                      book.title.toString(), // 책 제목
-                                      style: TextStyle(color: Colors.white),
-                                      textAlign: TextAlign.center, // 텍스트 중앙 정렬
-                                    ),
-                                  ),
-                                ),
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => MyBookHistory(
-                                          id: widget.id,
-                                          booktitle: book.title.toString())));
-                                },
-                                onLongPress: () {
-                                  deleteBook(index);
-                                },
-                              ),
-                            );
-                          } else {
-                            return SizedBox(
-                                width: (MediaQuery.of(context).size.width -
-                                        3 * 7) /
-                                    8); // 빈 공간
-                          }
-                        },
+                    padding: EdgeInsets.symmetric(horizontal: 1.5),
+                    child: InkWell(
+                      child: Container(
+                        color: backgroundColor, // 배경 색상 설정
+                        child: Center(
+                          child: Text(
+                            book.title.toString(), // 책 제목
+                            style: TextStyle(color: Colors.white),
+                            textAlign: TextAlign.center, // 텍스트 중앙 정렬
+                          ),
+                        ),
                       ),
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => MyBookHistory(
+                                id: widget.id,
+                                booktitle: book.title.toString())));
+                      },
+                      onLongPress: () {
+                        deleteBook(index);
+                      },
                     ),
                   );
                 },
@@ -209,4 +194,6 @@ class _LibraryState extends State<Library> {
       ),
     );
   }
+
+
 }

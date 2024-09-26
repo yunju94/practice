@@ -6,6 +6,7 @@ import 'package:practice/my/addBook.dart';
 import 'package:practice/search/reviewAll.dart';
 
 import 'package:sqflite/sqflite.dart';
+import 'package:uuid/uuid.dart';
 
 import '../Data/book.dart';
 import '../Data/database.dart';
@@ -26,11 +27,15 @@ class _DetailBookState extends State<DetailBook> {
   DatabaseReference? reference;
   String _databaseURL = 'https://practice-76503-default-rtdb.firebaseio.com/';
   List<Book> book = List.empty(growable: true);
+  late String uuidId;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    var uuid = Uuid();
+    uuidId = uuid.v4();
+
     db = DB().initDatabase(); //
     _database = FirebaseDatabase.instanceFor(
         app: Firebase.app(), databaseURL: _databaseURL);
@@ -82,12 +87,14 @@ class _DetailBookState extends State<DetailBook> {
                   onPressed: () {
                     reference!
                         .child(widget.id.toString())
-                        .push()
+                    .child(uuidId)
                         .set(Book(
                             widget.id,
                             widget.BookList!['title'],
                             widget.BookList!['authors'].toString(),
-                            widget.BookList!['thumbnail']).toJson())
+                            widget.BookList!['thumbnail'],
+                            uuidId,
+                    ).toJson())
                         .then((_) {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => AddBook(

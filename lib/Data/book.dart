@@ -3,10 +3,11 @@ class Book{
   String? title;
   String? author;
   String? thumbnail;
+  String? uuid;
 
 
 
-  Book( this.id, this.title, this.author, this.thumbnail);
+  Book( this.id, this.title, this.author, this.thumbnail, this.uuid);
 
   Map<String, dynamic> toMap(){
     return{
@@ -14,6 +15,7 @@ class Book{
       'title': title,
       'author' : author,
       'thumbnail' : thumbnail,
+      'uuid' : uuid,
 
     };
   }
@@ -21,7 +23,8 @@ class Book{
       : id = json['id'],
         title = json['title'],
         author = json['author'],
-       thumbnail = json['thumbnail'];
+       thumbnail = json['thumbnail'],
+        uuid = json['uuid'];
 
 
 
@@ -31,6 +34,7 @@ class Book{
       'title': title,
       'author' : author,
       'thumbnail' : thumbnail,
+      'uuid' : uuid,
 
 
     };
