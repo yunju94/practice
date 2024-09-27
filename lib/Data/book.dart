@@ -35,8 +35,6 @@ class Book{
       'author' : author,
       'thumbnail' : thumbnail,
       'uuid' : uuid,
-
-
     };
   }
 

@@ -28,8 +28,8 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
-    _idTextController = TextEditingController();
-    _pwTextController = TextEditingController();
+    _idTextController = new TextEditingController();
+    _pwTextController = new TextEditingController();
     _database = FirebaseDatabase.instanceFor(app: Firebase.app(), databaseURL: _databaseURL);
     reference = _database!.ref().child('user');
   }

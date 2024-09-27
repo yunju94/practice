@@ -41,8 +41,6 @@ class _BookListState extends State<BookList> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       appBar: AppBar(
         title: Text("도서 리스트"),
@@ -88,8 +86,6 @@ class _BookListState extends State<BookList> {
                   );
                 },
               ),
-
-
           );
         }, itemCount: widget.Books!.length,),
         ),

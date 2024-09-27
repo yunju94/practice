@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:practice/my/addBook.dart';
 import 'package:practice/login/signPage.dart';
@@ -29,11 +30,8 @@ void main() async{
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-
-
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -53,11 +51,7 @@ class MyApp extends StatelessWidget {
 
           '/add': (context) => AddBook(),
           '/myhistory': (context) => MyBookHistory(),
-
-
         }
     );
   }
-
-
 }

@@ -53,7 +53,6 @@ class _LibraryState extends State<Library> {
 
   void deleteBook(int index) {
     if (index < 0 || index >= bookList.length) return; // 범위 체크
-
     showDialog(
       context: context,
       builder: (context) {
@@ -138,11 +137,9 @@ class _LibraryState extends State<Library> {
                 reverse: true, // 아래에서 위로 쌓이도록 설정
                 itemBuilder: (context, index) {
                   if (index >= bookList.length) return SizedBox(); // 빈 공간 처리
-
                   final book = bookList[index];
                   Color backgroundColor = Colors
                       .primaries[index % Colors.primaries.length];
-
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: 1.5),
                     child: InkWell(
